@@ -334,7 +334,7 @@ if __name__ == "__main__":
     prompt_tokens = tokenizer.encode("The chemical formula of water is", prepend=bos_token_id)
     # generate the reference sequence using the model.generate() function
     generated_tokens = []
-    torch.cuda.synchronize()
+    synchronize()
     t0 = time.time()
     stream = model.generate(prompt_tokens, **kwargs)
     for token in stream:
@@ -342,7 +342,7 @@ if __name__ == "__main__":
         chunk = tokenizer.decode([token])
         print(chunk, end="", flush=True)
     print()
-    torch.cuda.synchronize()
+    synchronize()
     t1 = time.time()
     print(f"Reference time: {t1 - t0:.2f}s")
     reference_ids = generated_tokens
@@ -350,7 +350,7 @@ if __name__ == "__main__":
     generated_tokens = []
     engine = Engine(model, tokenizer)
     stream = engine.generate(prompt_tokens, num_samples=1, **kwargs) # note: runs in fp32
-    torch.cuda.synchronize()
+    synchronize()
     t0 = time.time()
     for token_column, token_masks in stream:
         token = token_column[0] # only print out the first row
@@ -358,7 +358,7 @@ if __name__ == "__main__":
         chunk = tokenizer.decode([token])
         print(chunk, end="", flush=True)
     print()
-    torch.cuda.synchronize()
+    synchronize()
     t1 = time.time()
     print(f"Engine time: {t1 - t0:.2f}s")
     # compare the two sequences
